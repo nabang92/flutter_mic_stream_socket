@@ -43,6 +43,6 @@
 	<false/>
 
 	<key>NSMicrophoneUsageDescription</key>
-    <string>stream from microphone??</string>
+    <string>stream from microphone?</string>
 </dict>
 </plist>
