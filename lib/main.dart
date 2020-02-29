@@ -77,7 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               'abcd',
-              style: Theme.of(context).textTheme.headline4,
             ),
             StreamBuilder(
               stream: channel.stream,
@@ -172,8 +171,9 @@ class _MyHomePageState extends State<MyHomePage> {
     await controller.intialize();
     controller.startAudioStream().listen((onData) async {
       if (isRecording) {
-        this.channel.sink.add(utf8.encode(onData.join()));
         print(onData.length);
+        channel.sink.add(onData);
+        //this.channel.sink.add(utf8.encode(onData.join()));
       }
     });
   }
