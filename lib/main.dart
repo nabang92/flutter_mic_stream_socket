@@ -179,11 +179,16 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> initAudioIOS() async {
     controller = new AudioController(CommonFormat.Int16, 16000, 1, true);
     await controller.intialize();
-    controller.startAudioStream().listen((onData) async {
+    controller.startAudioStream().listen((samples) async {
       if (isRecording) {
-        print(onData.length);
-        channel.sink.add(onData);
-        //this.channel.sink.add(utf8.encode(onData.join()));
+        //print(samples);
+        //channel.sink.add(samples); //8bit 에서 작동 음질 찢어짐
+
+        //print(Uint8List.fromList(samples));
+        //channel.sink.add(Uint8List.fromList(samples)); //8bit, 16bit 에서 작동 음질 찢어짐
+
+        print(utf8.encode(samples.join()));
+        channel.sink.add(utf8.encode(samples.join())); //8bit, 16bit 에서 작동 음질 노이즈 심함
       }
     });
   }
