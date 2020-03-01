@@ -111,13 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _startListening() {
     if (isRecording) return false;
-
+    /// 웹소켓 연결
+    wssconnect();
     setState(() {
       isRecording = true;
       startTime = DateTime.now();
     });
-    /// 웹소켓 연결
-    wssconnect();
     print("Start Listening to the microphone");
     return true;
   }
@@ -150,6 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       channel = IOWebSocketChannel.connect(url); //연결
     });
+    print("웹소켓 연결 프로세스");
   }
 
   /// 안드로이드용 오디오 스트리밍 처리
@@ -164,11 +164,11 @@ class _MyHomePageState extends State<MyHomePage> {
         //print(samples);
         //channel.sink.add(samples); //8bit 에서 작동 음질 찢어짐
 
-        //print(Uint8List.fromList(samples));
-        //channel.sink.add(Uint8List.fromList(samples)); //8bit, 16bit 에서 작동 음질 찢어짐
+        //print(utf8.encode(samples.join()));
+        //channel.sink.add(utf8.encode(samples.join())); //8bit 에서 작동 음질 노이즈 심함
 
-        print(utf8.encode(samples.join()));
-        channel.sink.add(utf8.encode(samples.join())); //8bit, 16bit 에서 작동 음질 노이즈 심함
+        //print(Uint8List.fromList(samples));
+        channel.sink.add(Uint8List.fromList(samples)); //8bit, 16bit 에서 작동 음질 찢어짐
 
         //https://github.com/anarchuser/mic_stream/issues/9 //이슈상황
       }
@@ -182,13 +182,14 @@ class _MyHomePageState extends State<MyHomePage> {
     controller.startAudioStream().listen((samples) async {
       if (isRecording) {
         //print(samples);
-        //channel.sink.add(samples); //8bit 에서 작동 음질 찢어짐
+        //channel.sink.add(samples);
+
+        //print(utf8.encode(samples.join()));
+        //channel.sink.add(utf8.encode(samples.join()));
 
         //print(Uint8List.fromList(samples));
-        //channel.sink.add(Uint8List.fromList(samples)); //8bit, 16bit 에서 작동 음질 찢어짐
+        channel.sink.add(Uint8List.fromList(samples));
 
-        print(utf8.encode(samples.join()));
-        channel.sink.add(utf8.encode(samples.join())); //8bit, 16bit 에서 작동 음질 노이즈 심함
       }
     });
   }
