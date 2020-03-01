@@ -25,6 +25,9 @@ dependencies:
   cupertino_icons: ^0.1.2
   web_socket_channel: ^1.1.0
   mic_stream: ^0.2.0+2
+  #mic_stream: # 안드로이드용
+  #  git:
+  #    url: https://github.com/zvikarp/mic_stream
   #audio_streams: ^1.0.0+2
   audio_streams: # 아이폰용
     git:
