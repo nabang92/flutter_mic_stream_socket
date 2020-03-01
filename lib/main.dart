@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:audio_streams/audio_streams.dart';
 import 'package:flutter/material.dart';
@@ -41,10 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
     /// 웹소켓 연결
     wssconnect();
-
     /// 플랫폼에 따라서 오디오 스크리밍 라이브러리를 변경하여 사용
     if (Platform.isAndroid) {
       /// Android-specific code
@@ -117,6 +116,8 @@ class _MyHomePageState extends State<MyHomePage> {
       isRecording = true;
       startTime = DateTime.now();
     });
+    /// 웹소켓 연결
+    wssconnect();
     print("Start Listening to the microphone");
     return true;
   }
@@ -142,8 +143,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // 문장을 인코딩해주어야 한다. Uri.encodeFull
     String param =
-        "?apiId=$API_ID&apiKey=$API_KEY&userId=${user_id}&model=${model}&answerText=${Uri.encodeFull(answer_text)}&chksym=undefined";
-    String url = 'wss://maieng.maum.ai:7777/engedu/v1/websocket/pron${param}';
+        "?apiId=$API_ID&apiKey=$API_KEY&userId=$user_id&model=$model&answerText=${Uri.encodeFull(answer_text)}&chksym=undefined";
+    String url = 'wss://maieng.maum.ai:7777/engedu/v1/websocket/pron$param';
+    //String url = 'wss://websocket-ykgtl.run.goorm.io';
 
     setState(() {
       channel = IOWebSocketChannel.connect(url); //연결
@@ -156,11 +158,19 @@ class _MyHomePageState extends State<MyHomePage> {
         audioSource: AudioSource.VOICE_RECOGNITION,
         sampleRate: 16000,
         channelConfig: ChannelConfig.CHANNEL_IN_MONO,
-        audioFormat: AudioFormat.ENCODING_PCM_8BIT);
+        audioFormat: AudioFormat.ENCODING_PCM_16BIT);
     stream.listen((samples) {
       if(isRecording) {
-        print(samples);
-        channel.sink.add(samples);
+        //print(samples);
+        //channel.sink.add(samples); //8bit 에서 작동 음질 찢어짐
+
+        //print(Uint8List.fromList(samples));
+        //channel.sink.add(Uint8List.fromList(samples)); //8bit, 16bit 에서 작동 음질 찢어짐
+
+        print(utf8.encode(samples.join()));
+        channel.sink.add(utf8.encode(samples.join())); //8bit, 16bit 에서 작동 음질 노이즈 심함
+
+        //https://github.com/anarchuser/mic_stream/issues/9 //이슈상황
       }
     });
   }
